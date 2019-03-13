@@ -7,13 +7,13 @@ $ npm install telegraf-wiretapper
 ```
 ## Usage
 ### Yandex SpeechKit cloud API
-This middleware uses [Yandex SpeechKit](https://cloud.yandex.ru/docs/speechkit/) to sythesize messages. You should have Yandex cloud account to access their API. Middleware configuration requires Yandex cloud folder id and access key. Please follow their [documentation](https://cloud.yandex.ru/docs/speechkit/concepts/auth) to setup it properly.
+This middleware uses [Yandex SpeechKit](https://cloud.yandex.ru/docs/speechkit/) to synthesize messages. You should have Yandex cloud account to access their API. Middleware configuration requires Yandex cloud folder id and access key. Please follow their [documentation](https://cloud.yandex.ru/docs/speechkit/concepts/auth) to setup it properly.
 ### Lame Encoder
 Your bot host should have [Lame](http://lame.sourceforge.net/) installed.
 
 ### Bot example
 ```typescript
-import { Telegraf, ContextMessageUpdate } from 'telegraf';
+import Telegraf, { ContextMessageUpdate } from 'telegraf';
 import { WireTapper, Configuration } from 'telegraf-wiretapper';
 
 const botToken = process.env.BOT_TOKEN || 'your bot token';
