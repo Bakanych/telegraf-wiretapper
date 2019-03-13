@@ -1,0 +1,43 @@
+{
+  "name": "telegraf-wiretapper",
+  "version": "0.0.5",
+  "description": "Convert your unread telegram chat messages into voice dialog",
+  "repository": {
+    "url": "bakanych/telegraf-wiretapper",
+    "type": "git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=8.5.0"
+  },
+  "author": "Bakanych <manych@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "telegram",
+    "telegraf",
+    "bot framework",
+    "middleware",
+    "text to speech"
+  ],
+  "dependencies": {
+    "@types/form-urlencoded": "^2.0.0",
+    "axios": "^0.18.0",
+    "form-urlencoded": "^3.0.0",
+    "node-lame": "^1.2.0",
+    "os": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.9",
+    "jest": "^24.3.1",
+    "telegraf": "^3.27.1",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.3333"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib/**/*"
+  ]
+}
