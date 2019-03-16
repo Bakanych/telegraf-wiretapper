@@ -1,6 +1,6 @@
 import { Update, Message } from "telegram-typings";
 
-export class Tape {
+export default class Tape {
   private updates: Update[] = [];
   private markers = new Map<number, Map<number, number>>();
   constructor() {
@@ -11,13 +11,13 @@ export class Tape {
   }
 
   private getUserMarker(chat_id: number, user_id: number): number {
-    return this.getChatMarkers(chat_id)!.get(user_id)! || 0;
+    return this.getChatMarkers(chat_id)!.get(user_id) || 0;
   }
 
   private updateUserMarker(chat_id: number, user_id: number, update_id: number) {
     let chatMarkers = this.getChatMarkers(chat_id);
     chatMarkers.set(user_id, update_id);
-    this.markers.set(chat_id, chatMarkers);
+    return this.markers.set(chat_id, chatMarkers);
   }
 
   /**
@@ -30,13 +30,16 @@ export class Tape {
 
     const chat_id = update.message!.chat.id;
     const user_id = update.message!.from!.id;
-    this.updateUserMarker(chat_id, user_id, update.update_id);
+    const marker = this.updateUserMarker(chat_id, user_id, update.update_id);
+    //console.log(`SAVE | chat: total: marker:`);
   }
 
   getUserMessages(update: Update): Message[] {
     const chat_id = update.message!.chat.id;
     const user_id = update.message!.from!.id;
     const userMarker = this.getUserMarker(chat_id, user_id);
+
+    //console.log(`PLAY | chat:${chat_id} total:${this.updates.length} user:${user_id} marker:${userMarker}`);
     return this.updates.filter(x => x.message!.chat.id === chat_id && x.update_id > userMarker && x.message!.from!.id !== user_id)
       .map(x => x.message!);
   }

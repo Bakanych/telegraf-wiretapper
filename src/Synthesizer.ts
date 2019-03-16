@@ -8,7 +8,7 @@ export interface Synthesizer {
   synthesize(text: string, voice?: string, emotion?: string): Promise<Buffer | undefined>;
 }
 
-export class YandexSpeechToText implements Synthesizer {
+export class YandexTextToSpeech implements Synthesizer {
 
   voices = ['alyss', 'zahar', 'jane', 'ermil', 'oksana', 'omazh'];
   emotions = ['neutral'];

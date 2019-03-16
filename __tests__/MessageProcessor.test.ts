@@ -1,19 +1,11 @@
 import { MessageProcessor, Dialogue } from '../src/MessageProcessor';
-import { Message } from 'telegram-typings';
 import { getUserName } from '../src/TelegramHelper';
 import { EOL } from 'os';
+import { getMessage } from '../__TestHelpers/TestHelper';
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 const mp = new MessageProcessor();
-const ts = () => new Date().getTime();
-const getMessage = (user_id = 1, text?: string | undefined): Message =>
-  ({
-    message_id: 1,
-    text: text,
-    from: { id: user_id, is_bot: false, first_name: user_id.toString() },
-    date: ts(),
-    chat: { id: 1, type: 'group' }
-  });
+
 
 test('convert single message with callback', () => {
   const callback = jest.fn();

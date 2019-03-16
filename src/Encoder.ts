@@ -19,7 +19,6 @@ export class LameEncoder implements Encoder {
     }).setBuffer(buffer);
 
     await encoder.encode();
-    console.log(encoder.getStatus());
     return encoder.getBuffer();
   }
 }

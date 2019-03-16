@@ -18,6 +18,7 @@ import { WireTapper, Configuration } from 'telegraf-wiretapper';
 
 const botToken = process.env.BOT_TOKEN || 'your bot token';
 const config: Configuration = {
+  playCommand: 'play',
   yandexCloud: {
     accessKey: process.env.YANDEX_CLOUD_ACCESS_KEY || 'Yandex cloud access key',
     folderId: process.env.YANDEX_CLOUD_FOLDER_ID || 'Yandex cloud folder'
@@ -28,11 +29,6 @@ const bot = new Telegraf(botToken);
 const wireTapper = new WireTapper(config);
 
 bot.use(wireTapper.middleware());
-
-bot.command('play', async (ctx: ContextMessageUpdate) => {
-  await wireTapper.play(ctx);
-});
-
 bot.launch();
 ```
 ### Docker example

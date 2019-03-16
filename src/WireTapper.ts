@@ -1,8 +1,8 @@
 import { Configuration } from "./Configuration";
 import { Player } from "./Player";
 import { Middleware, ContextMessageUpdate } from "telegraf";
-import { Tape } from "./Tape";
-import { YandexSpeechToText } from "./Synthesizer";
+import Tape from "./Tape";
+import { YandexTextToSpeech } from "./Synthesizer";
 import { LameEncoder } from "./Encoder";
 import { MessageProcessor } from "./MessageProcessor";
 import { getUserName } from "./TelegramHelper";
@@ -14,15 +14,21 @@ export class WireTapper {
   constructor(private config: Configuration) {
     this.tape = new Tape();
     this.player = new Player(
-      new YandexSpeechToText(this.config.yandexCloud.accessKey, this.config.yandexCloud.folderId),
+      new YandexTextToSpeech(this.config.yandexCloud.accessKey, this.config.yandexCloud.folderId),
       new LameEncoder(),
       new MessageProcessor());
+
+    // @ts-ignore
+    //this.tape.save({ update_id: 1, message: { text: 'test', from: { id: 1, username: 'one' }, chat: { id: 70326441 } } });
 
   }
 
   middleware(): Middleware<ContextMessageUpdate> {
     return (ctx, next) => {
       if (ctx.updateType === 'message') {
+        if (ctx.update.message!.text === `/${this.config.playCommand}`)
+          this.play(ctx);
+
         this.tape.save(ctx.update);
       }
       if (next) return next();
@@ -30,7 +36,7 @@ export class WireTapper {
 
   }
 
-  async play(ctx: ContextMessageUpdate) {
+  private async play(ctx: ContextMessageUpdate) {
     const user_name = getUserName(ctx.update.message!.from!);
     const messages = this.tape.getUserMessages(ctx.update);
     if (messages.length === 0) {

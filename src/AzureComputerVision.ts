@@ -22,7 +22,6 @@ export class AzureComputerVision {
 
   async getImageDescription(imageUrl: string) {
     const response = await axios.post(this.uriBase, { "url": imageUrl }, { params: this.params, headers: this.headers });
-    console.log(response.data.description);
     if (response.data.description.captions.length > 0)
       return response.data.description.captions[0].text;
 
