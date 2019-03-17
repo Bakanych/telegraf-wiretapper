@@ -1,7 +1,9 @@
 import Tape from '../src/Tape';
 import { WireTapper, Configuration } from '../src/index';
-import { ContextMessageUpdate } from 'telegraf';
 import { getUpdate, getMessage } from '../__TestHelpers/TestHelper';
+import { User } from 'telegram-typings';
+
+jest.mock('../src/Player');
 
 const callOrder: string[] = [];
 const mockSave = jest.fn(() => callOrder.push('save'));
@@ -21,6 +23,12 @@ const config: Configuration = {
   yandexCloud: { accessKey: '', folderId: '' }
 }
 
+const mockTelegram: any = {
+  getMe: () => new Promise<User>(resolve => resolve({ id: 1, is_bot: true, username: 'mybot', first_name: 'mybot' }))
+}
+
+const reply = (text: string) => console.log(text);
+
 let wireTapper: any;
 
 
@@ -38,14 +46,16 @@ test.each([
   ['/othercommand', 1],
   ['/othercommand@anybot', 1]
 ])
-  ('should save any message into Tape and do not run play', (text, expected) => {
-    //@ts-ignore
-    const context: ContextMessageUpdate = {
+  ('should save any message into Tape and do not run play', async (text, expected) => {
+
+    const context: any = {
       updateType: 'message',
-      update: getUpdate(getMessage(1, text as string))
+      update: getUpdate(getMessage(1, text as string)),
+      telegram: mockTelegram,
+      reply: reply
     };
 
-    wireTapper.middleware()(context);
+    await wireTapper.middleware()(context);
 
     expect(mockSave).toHaveBeenCalledTimes(expected as number);
     expect(mockGetUserMessages).not.toHaveBeenCalled();
@@ -54,17 +64,19 @@ test.each([
 
 test.each([
   [`/${config.playCommand}`],
-  [`/${config.playCommand}@mybot`],
-  [`/${config.playCommand}@___sdhfjksldkjfskdjhf_BOt`]])
-  ('should play first and then save message into Tape', (text) => {
+  [`/${config.playCommand}@mybot`]
+])
+  ('should play first and then save message into Tape', async (text) => {
 
-    // @ts-ignore
-    const context: ContextMessageUpdate = {
+
+    const context: any = {
       updateType: 'message',
-      update: getUpdate(getMessage(1, text))
+      update: getUpdate(getMessage(1, text)),
+      telegram: mockTelegram,
+      reply: reply
     };
 
-    wireTapper.middleware()(context);
+    await wireTapper.middleware()(context);
 
     expect(callOrder).toEqual(['getUserMessages', 'save']);
 

@@ -23,11 +23,13 @@ export class WireTapper {
   middleware(): Middleware<ContextMessageUpdate> {
     return (ctx, next) => {
       if (ctx.updateType === 'message' && ctx.update.message!.text) {
-        const bot_command_regex = new RegExp(`^\/${this.config.playCommand}(@\\w+bot)?$`, "gi");
-        if (ctx.update.message!.text!.match(bot_command_regex))
-          this.play(ctx);
-
-        this.tape.save(ctx.update);
+        ctx.telegram.getMe().then(user => {
+          const bot_command_regex = new RegExp(`^\/${this.config.playCommand}(@${user.username})?$`, "gi");
+          if (ctx.update.message!.text!.match(bot_command_regex)) {
+            this.play(ctx);
+          }
+          this.tape.save(ctx.update);
+        })
       }
       if (next) return next();
     };
