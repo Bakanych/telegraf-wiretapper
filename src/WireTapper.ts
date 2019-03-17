@@ -25,8 +25,9 @@ export class WireTapper {
 
   middleware(): Middleware<ContextMessageUpdate> {
     return (ctx, next) => {
-      if (ctx.updateType === 'message') {
-        if (ctx.update.message!.text === `/${this.config.playCommand}`)
+      if (ctx.updateType === 'message' && ctx.update.message!.text) {
+        const bot_command_regex = new RegExp(`^\/${this.config.playCommand}(@\\w+bot)?$`, "gi");
+        if (ctx.update.message!.text!.match(bot_command_regex))
           this.play(ctx);
 
         this.tape.save(ctx.update);

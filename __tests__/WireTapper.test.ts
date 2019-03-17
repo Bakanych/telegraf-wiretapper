@@ -33,27 +33,39 @@ beforeEach(() => {
   expect(Tape).toHaveBeenCalledTimes(1);
 });
 
-test('should save any message into Tape and do not run play', () => {
-  //@ts-ignore
-  const context: ContextMessageUpdate = { updateType: 'message', update: { update_id: 1, message: '' } };
+test.each([
+  ['', 0],
+  ['/othercommand', 1],
+  ['/othercommand@anybot', 1]
+])
+  ('should save any message into Tape and do not run play', (text, expected) => {
+    //@ts-ignore
+    const context: ContextMessageUpdate = {
+      updateType: 'message',
+      update: getUpdate(getMessage(1, text as string))
+    };
 
-  wireTapper.middleware()(context);
+    wireTapper.middleware()(context);
 
-  expect(mockSave).toHaveBeenCalledTimes(1);
-  expect(mockGetUserMessages).not.toHaveBeenCalled();
-});
+    expect(mockSave).toHaveBeenCalledTimes(expected as number);
+    expect(mockGetUserMessages).not.toHaveBeenCalled();
+  });
 
 
-test('should play first and then save message into Tape', () => {
+test.each([
+  [`/${config.playCommand}`],
+  [`/${config.playCommand}@mybot`],
+  [`/${config.playCommand}@___sdhfjksldkjfskdjhf_BOt`]])
+  ('should play first and then save message into Tape', (text) => {
 
-  // @ts-ignore
-  const context: ContextMessageUpdate = {
-    updateType: 'message',
-    update: getUpdate(getMessage(1, `/${config.playCommand}`))
-  };
+    // @ts-ignore
+    const context: ContextMessageUpdate = {
+      updateType: 'message',
+      update: getUpdate(getMessage(1, text))
+    };
 
-  wireTapper.middleware()(context);
+    wireTapper.middleware()(context);
 
-  expect(callOrder).toEqual(['getUserMessages', 'save']);
+    expect(callOrder).toEqual(['getUserMessages', 'save']);
 
-});
+  });
