@@ -18,9 +18,6 @@ export class WireTapper {
       new LameEncoder(),
       new MessageProcessor());
 
-    // @ts-ignore
-    //this.tape.save({ update_id: 1, message: { text: 'test', from: { id: 1, username: 'one' }, chat: { id: 70326441 } } });
-
   }
 
   middleware(): Middleware<ContextMessageUpdate> {
