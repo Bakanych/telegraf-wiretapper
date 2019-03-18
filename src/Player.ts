@@ -28,7 +28,7 @@ export class Player {
 
     this.messageProcessor.convertToPlayScript(messages, (dialogue => {
       const voice = voices.get(dialogue.user_id);
-      const text = `${dialogue.user_name}${this.synthesizer.getPause()}${dialogue.text}`;
+      const text = `${dialogue.user_name}.${this.synthesizer.getPause()}${dialogue.text}`;
       promises.push(this.synthesizer.synthesize(text, voice));
     }));
 

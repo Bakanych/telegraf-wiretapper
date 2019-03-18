@@ -19,7 +19,7 @@ export class YandexTextToSpeech implements Synthesizer {
 
   private token!: string;
 
-  getPause = (n: number = 3) => [...Array(n).keys()].map(x => '-').join(',');
+  getPause = (n: number = 2) => [...Array(n).keys()].map(x => '-').join(',') + ' ';
 
   private async getToken() {
     const url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
