@@ -41,6 +41,7 @@ export default class Tape {
 
     //console.log(`PLAY | chat:${chat_id} total:${this.updates.length} user:${user_id} marker:${userMarker}`);
     return this.updates.filter(x => x.message!.chat.id === chat_id && x.update_id > userMarker && x.message!.from!.id !== user_id)
+      .sort((x, y) => x.update_id - y.update_id)
       .map(x => x.message!);
   }
 }
