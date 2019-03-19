@@ -23,19 +23,13 @@ export class Player {
       return undefined;
 
     const promises: Promise<Buffer | undefined>[] = [];
-    let raw_buffer: Buffer = Buffer.alloc(0);
     const voices = this.assignVoice(messages);
 
-    const script = this.messageProcessor.convertToPlayScript(messages, (dialogue => {
+    this.messageProcessor.convertToPlayScript(messages, (dialogue => {
       const voice = voices.get(dialogue.user_id);
       const text = `${dialogue.user_name}.${this.synthesizer.getPause()}${dialogue.text}`;
-
-      console.log(dialogue.text);
-
       promises.push(this.synthesizer.synthesize(text, voice));
     }));
-
-    console.log(script);
 
     const result = (await Promise.all(promises))
       .reduce((total, buf) => {
@@ -44,13 +38,6 @@ export class Player {
         }
         return total;
       }, Buffer.alloc(0));
-
-    // for (const promise of promises) {
-    //   const voice_text = await promise;
-    //   if (voice_text) {
-    //     raw_buffer = Buffer.concat([raw_buffer, voice_text]);
-    //   }
-    // }
 
     return (result!.length > 0) ? result : undefined;
   }
