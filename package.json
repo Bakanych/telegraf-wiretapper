@@ -30,11 +30,11 @@
     "os": "^0.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.9",
-    "jest": "^24.3.1",
+    "@types/jest": "latest",
+    "jest": "latest",
     "telegraf": "^3.27.1",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
+    "ts-jest": "latest",
+    "typescript": "latest"
   },
   "main": "lib/index.js",
   "files": [
