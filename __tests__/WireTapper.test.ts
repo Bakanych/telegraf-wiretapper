@@ -1,4 +1,4 @@
-import Tape from '../src/Tape';
+import Recorder from '../src/Recorder';
 import { WireTapper, Configuration } from '../src/index';
 import { getUpdate, getMessage } from '../__TestHelpers/TestHelper';
 import { User } from 'telegram-typings';
@@ -6,14 +6,14 @@ import { User } from 'telegram-typings';
 jest.mock('../src/Player');
 
 const callOrder: string[] = [];
-const mockSave = jest.fn(() => callOrder.push('save'));
-const mockGetUserMessages = jest.fn(() => callOrder.push('getUserMessages'));
+const mock_recordMessage = jest.fn(() => callOrder.push('recordMessage'));
+const mock_getNewMessages = jest.fn(() => callOrder.push('getNewMessages'));
 
-jest.mock('../src/Tape', () => {
+jest.mock('../src/Recorder', () => {
   return jest.fn().mockImplementation(() => {
     return {
-      save: mockSave,
-      getUserMessages: mockGetUserMessages
+      recordMessage: mock_recordMessage,
+      getNewMessages: mock_getNewMessages
     };
   });
 });
@@ -38,7 +38,7 @@ beforeEach(() => {
   callOrder.length = 0;
 
   wireTapper = new WireTapper(config);
-  expect(Tape).toHaveBeenCalledTimes(1);
+  expect(Recorder).toHaveBeenCalledTimes(1);
 });
 
 test.each([
@@ -57,8 +57,8 @@ test.each([
 
     await wireTapper.middleware()(context);
 
-    expect(mockSave).toHaveBeenCalledTimes(expected as number);
-    expect(mockGetUserMessages).not.toHaveBeenCalled();
+    expect(mock_recordMessage).toHaveBeenCalledTimes(expected as number);
+    expect(mock_getNewMessages).not.toHaveBeenCalled();
   });
 
 
@@ -78,6 +78,6 @@ test.each([
 
     await wireTapper.middleware()(context);
 
-    expect(callOrder).toEqual(['getUserMessages', 'save']);
+    expect(callOrder).toEqual(['getNewMessages', 'recordMessage']);
 
   });
