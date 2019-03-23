@@ -17,26 +17,29 @@ export class YandexTextToSpeech implements Synthesizer {
     private accessKey: string,
     private folderId: string) { }
 
-  private token!: string;
+  private token = { iamToken: null, expiresAt: null };
 
   getPause = (n: number = 2) => [...Array(n).keys()].map(x => '-').join(',') + ' ';
 
   private async getToken() {
     const url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
+    console.log('Getting Yandex token...');
     return axios.post(url, { "yandexPassportOauthToken": this.accessKey })
-      .then(r => { return this.token = r.data.iamToken; })
-      .catch(e => { console.log(e.response.data); return null; });
+      .then(r => r.data);
+    //.catch(e => { console.log(e.response.data); return null; });
   }
 
 
   async synthesize(text: string, voice = 'alyss', emotion = 'neutral'): Promise<Buffer | undefined> {
 
-    if (!this.token)
-      await this.getToken();
+    if (!this.token.iamToken || this.token.expiresAt! < (new Date())) {
+      this.token = await this.getToken();
+    }
+
 
     const url = 'https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize';
     const headers = {
-      "Authorization": `Bearer ${this.token}`
+      "Authorization": `Bearer ${this.token.iamToken}`
     };
     const data = formurlencoded({
       "format": "lpcm",
@@ -53,14 +56,6 @@ export class YandexTextToSpeech implements Synthesizer {
       })
       .catch(async err => {
         console.log(`${err.response.status}: ${err.response.statusText}`);
-        switch (err.response.status) {
-          case 401:
-            if (await this.getToken())
-              return this.synthesize(text, voice, emotion);
-            break;
-          default:
-            break;
-        }
       });
   }
 }
