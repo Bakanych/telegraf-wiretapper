@@ -1,7 +1,7 @@
 import { Configuration } from "./Configuration";
 import { Player } from "./Player";
 import { Middleware, ContextMessageUpdate } from "telegraf";
-import { getNewMessages, pushMessage, getUserProfiles } from "./Storage";
+import { getNewMessages, pushMessage, getUserProfiles, updateMessage } from "./Storage";
 import { YandexTextToSpeech } from "./Synthesizer";
 import { MessageProcessor } from "./MessageProcessor";
 import { getUserName, getBotCommand } from "./TelegramHelper";
@@ -28,6 +28,12 @@ export class WireTapper {
 
         if (!bot_command || (bot_command && bot_command === this.config.playCommand))
           pushMessage(ctx);
+
+        return;
+      }
+
+      if (ctx.updateType === 'edited_message') {
+        return updateMessage(ctx);
       }
     };
 

@@ -17,6 +17,14 @@ export function pushMessage(ctx: ContextMessageUpdate) {
   ctx.session.messages.push(ctx.update.message!);
 }
 
+export function updateMessage(ctx: ContextMessageUpdate) {
+  const edited_message = ctx.update.edited_message!;
+  const original_message = ctx.session.messages.filter(x => x.message_id === edited_message.message_id);
+  if (original_message) {
+    ctx.session.messages[ctx.session.messages.indexOf(original_message[0])] = edited_message;
+  }
+}
+
 export function getNewMessages(ctx: ContextMessageUpdate) {
   ctx.session.messages = ctx.session.messages || [];
   if (!ctx.session.messages)
