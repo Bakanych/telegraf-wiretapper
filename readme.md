@@ -7,14 +7,19 @@ $ npm install telegraf-wiretapper
 ```
 ## Usage
 ### Yandex SpeechKit cloud API
-This middleware uses [Yandex SpeechKit](https://cloud.yandex.ru/docs/speechkit/) to synthesize messages. You should have Yandex cloud account to access their API. Middleware configuration requires Yandex cloud folder id and access key. Please follow their [documentation](https://cloud.yandex.ru/docs/speechkit/concepts/auth) to setup it properly.
-### Lame Encoder
-Your bot host should have [Lame](http://lame.sourceforge.net/) installed.
+This middleware uses [Yandex SpeechKit](https://cloud.yandex.ru/docs/speechkit/) to synthesize messages. You should have Yandex cloud account to access API. Middleware configuration requires Yandex cloud folder id and access key. Please follow official [documentation](https://cloud.yandex.ru/docs/speechkit/concepts/auth) to setup it properly.
+### FFmpeg
+Your bot host should have [FFmpeg](https://ffmpeg.org) installed.
+### Session
+The middleware usess [Telegraf session](https://telegraf.js.org/#/?id=session) object as a storage. You can choose any implementation to make it statefull.
+
+*Important:* use chat id as a session key (see bot example below). 
 
 ### Bot example
 ```typescript
 import Telegraf, { ContextMessageUpdate } from 'telegraf';
 import { WireTapper, Configuration } from 'telegraf-wiretapper';
+import LocalSession from 'telegraf-session-local';
 
 const botToken = process.env.BOT_TOKEN || 'your bot token';
 const config: Configuration = {
@@ -25,17 +30,27 @@ const config: Configuration = {
   }
 };
 
+const localSession = new LocalSession(
+  {
+    getSessionKey: (ctx: ContextMessageUpdate) => ctx.chat!.id
+  }
+)
+
 const bot = new Telegraf(botToken);
 const wireTapper = new WireTapper(config);
 
-bot.use(wireTapper.middleware());
+bot.use(
+  localSession.middleware(),
+  wireTapper.middleware()
+);
+
 bot.launch();
 ```
 ### Docker example
 Below is Dockerfile I used to run it:
 ```docker
 FROM node
-RUN apt-get update && apt-get install -y lame
+RUN apt-get update && apt-get install -y ffmpeg
 
 WORKDIR /usr/src/app
 

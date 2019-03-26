@@ -1,51 +1,50 @@
 import { Configuration } from "./Configuration";
 import { Player } from "./Player";
 import { Middleware, ContextMessageUpdate } from "telegraf";
-import Recorder from "./Recorder";
+import { getNewMessages, pushMessage, getUserProfiles } from "./Storage";
 import { YandexTextToSpeech } from "./Synthesizer";
-import { LameEncoder } from "./Encoder";
 import { MessageProcessor } from "./MessageProcessor";
-import { getUserName } from "./TelegramHelper";
+import { getUserName, getBotCommand } from "./TelegramHelper";
 
 export class WireTapper {
 
-  private recorder: Recorder = new Recorder();
-  private player: Player;
+  player: Player;
 
   constructor(private config: Configuration) {
     this.player = new Player(
       new YandexTextToSpeech(this.config.yandexCloud.accessKey, this.config.yandexCloud.folderId),
-      new LameEncoder(),
       new MessageProcessor());
 
   }
 
   middleware(): Middleware<ContextMessageUpdate> {
     return async (ctx, next) => {
-      if (ctx.updateType === 'message' && ctx.update.message!.text) {
-        const bot = await ctx.telegram.getMe();
-        const bot_command_regex = new RegExp(`^\/${this.config.playCommand}(@${bot.username})?$`, "gi");
-        if (ctx.update.message!.text!.match(bot_command_regex)) {
-          this.play(ctx);
-        }
-        this.recorder.recordMessage(ctx);
-
-      }
       if (next) await next();
+      if (ctx.updateType === 'message' && ctx.update.message!.text) {
+
+        const bot_command = getBotCommand(ctx.update.message!);
+        if (bot_command === this.config.playCommand)
+          await this.play(ctx);
+
+        if (!bot_command || (bot_command && bot_command === this.config.playCommand))
+          pushMessage(ctx);
+      }
     };
 
   }
 
   private async play(ctx: ContextMessageUpdate) {
     const user_name = getUserName(ctx.update.message!.from!);
-    const messages = this.recorder.getNewMessages(ctx);
+    const messages = getNewMessages(ctx);
+    //console.log(messages.map(x => `${x.from!.first_name}: ${x.text}`));
     if (!messages || messages.length === 0) {
       ctx.reply(`Терпение, ${user_name}...`);
       return;
     }
 
     ctx.reply(`Есть у меня одна плёночка, ${user_name}...`);
-    const voiceMessage = await this.player.play(messages);
+    const voices = new Map(getUserProfiles(ctx).map(x => [x.user_id, x.voice] as [number, string]));
+    const voiceMessage = await this.player.playScript(messages, voices);
     if (voiceMessage)
       ctx.replyWithAudio({
         source: voiceMessage

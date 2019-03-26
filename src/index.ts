@@ -1,14 +1,13 @@
-import { Message } from 'telegram-typings';
+import { WireTapperModel } from './Storage';
 
 export * from './WireTapper';
+export * from './Storage';
 export * from './Configuration';
-
-export interface TelegrafSession {
-  messages: Message[]
-}
+export * from './Synthesizer';
+export * from './TelegramHelper';
 
 declare module 'telegraf' {
   interface ContextMessageUpdate {
-    session: TelegrafSession;
+    session: WireTapperModel
   }
 }

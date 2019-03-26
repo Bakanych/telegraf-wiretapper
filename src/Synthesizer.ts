@@ -1,48 +1,47 @@
 import axios from 'axios';
 import formurlencoded from 'form-urlencoded';
 
+export const voices = ['oksana', 'alyss', 'jane', 'omazh', 'zahar', 'ermil'];
+export const emotions = ['neutral'];
+
 export interface Synthesizer {
-  voices: string[];
-  emotions: string[];
   getPause(n?: number): string,
   synthesize(text: string, voice?: string, emotion?: string): Promise<Buffer | undefined>;
 }
 
 export class YandexTextToSpeech implements Synthesizer {
 
-  voices = ['alyss', 'zahar', 'jane', 'ermil', 'oksana', 'omazh'];
-  emotions = ['neutral'];
-
   constructor(
     private accessKey: string,
-    private folderId: string) { }
+    private folderId: string) {
+    this.setToken();
+  }
 
   private token = { iamToken: null, expiresAt: null };
 
   getPause = (n: number = 2) => [...Array(n).keys()].map(x => '-').join(',') + ' ';
 
-  private async getToken() {
+  private async setToken(): Promise<void> {
     const url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
     console.log('Getting Yandex token...');
     return axios.post(url, { "yandexPassportOauthToken": this.accessKey })
-      .then(r => r.data);
+      .then(r => this.token = r.data);
     //.catch(e => { console.log(e.response.data); return null; });
   }
 
 
-  async synthesize(text: string, voice = 'alyss', emotion = 'neutral'): Promise<Buffer | undefined> {
+  async synthesize(text: string, voice = 'alyss', emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
 
     if (!this.token.iamToken || this.token.expiresAt! < (new Date())) {
-      this.token = await this.getToken();
+      await this.setToken();
     }
-
 
     const url = 'https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize';
     const headers = {
       "Authorization": `Bearer ${this.token.iamToken}`
     };
     const data = formurlencoded({
-      "format": "lpcm",
+      "format": format,
       "voice": voice,
       "emotion": emotion,
       "sampleRateHertz": "48000",

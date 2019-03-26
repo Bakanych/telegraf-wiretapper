@@ -1,6 +1,6 @@
 import { Update, Message, User } from "telegram-typings";
 import { Dialogue } from "../src/MessageProcessor";
-import { TelegrafSession } from "../src";
+import { WireTapperModel } from "../src";
 
 const ts = () => {
   const hrTime = process.hrtime();
@@ -33,11 +33,12 @@ export const getUpdate = (message: Message = getMessage()): Update => ({
   message: message
 });
 
-export const getSession = (): TelegrafSession => ({
-  messages: []
+export const getSession = (): WireTapperModel => ({
+  messages: [],
+  user_profiles: []
 });
 
-export const getContext = (update: Update, session: TelegrafSession): any => ({
+export const getContext = (update: Update, session: WireTapperModel): any => ({
   updateType: 'message',
   update: update,
   session: session,
