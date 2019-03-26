@@ -3,10 +3,10 @@ import { Synthesizer, voices } from "./Synthesizer";
 import { MessageProcessor } from "./MessageProcessor";
 import tmp from 'tmp';
 import fs from 'fs';
-import path from 'path';
 import { EOL } from "os";
 import util from 'util';
 const exec = util.promisify(require('child_process').exec);
+import del from 'del';
 
 export class Player {
   constructor(private synthesizer: Synthesizer, private messageProcessor: MessageProcessor) { }
@@ -31,7 +31,6 @@ export class Player {
     if (messages.length === 0)
       return undefined;
 
-    const tmp_dir = tmp.dirSync().name;
     const promises: Promise<Buffer | undefined>[] = [];
     const oggs: string[] = [];
 
@@ -45,9 +44,8 @@ export class Player {
       .reduce((total, buf, i) => {
         if (buf) {
           // save buffer to file
-          const ogg_path = path.join(tmp_dir, i.toString() + '.ogg');
-          const stream = fs.createWriteStream(ogg_path);
-          stream.write(buf);
+          const ogg_path = tmp.tmpNameSync({ postfix: '.ogg' });
+          fs.createWriteStream(ogg_path, { autoClose: true }).write(buf);
           oggs.push(ogg_path);
           total = Buffer.concat([total!, buf]);
         }
@@ -55,23 +53,26 @@ export class Player {
       }, Buffer.alloc(0));
 
     if (oggs.length > 1) {
-      const result_ogg = await this.concatOgg(oggs, tmp_dir);
-      if (result_ogg) {
-        return fs.readFileSync(result_ogg);
-      }
-      else
-        return undefined;
+      return await this.concatOgg(oggs);
     }
     else
       return (result_buffer!.length > 0) ? result_buffer : undefined;
   }
 
-  private async concatOgg(oggs: string[], output_dir: string) {
-    const list_file = path.join(output_dir, 'list.txt');
-    const output_file = path.join(output_dir, 'out.ogg');
-    fs.createWriteStream(list_file).write(oggs.map(x => `file '${x}'`).join(EOL));
+  private async concatOgg(oggs: string[]) {
+    const list_file = tmp.tmpNameSync({ postfix: '.txt' });
+    const output_file = tmp.tmpNameSync({ postfix: '.ogg' });
+    fs.createWriteStream(list_file, { autoClose: true })
+      .write(oggs.map(x => `file '${x}'`).join(EOL));
     const command = `ffmpeg -f concat -safe 0 -i ${list_file} -c copy ${output_file}`;
     await exec(command);
-    return output_file;
+    const buffer = fs.readFileSync(output_file);
+
+    await del(output_file, { force: true });
+    await del(list_file, { force: true });
+
+    await Promise.all(oggs.map(async x => await del(x, { force: true })));
+
+    return buffer;
   }
 }
