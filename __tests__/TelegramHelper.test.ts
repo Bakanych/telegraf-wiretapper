@@ -1,5 +1,6 @@
 import { User } from "telegram-typings";
-import { getUserName } from "../src/TelegramHelper";
+import { getUserName, isCyrillic, getBotCommand } from "../src/TelegramHelper";
+import { getMessage } from "../__TestHelpers/TestHelper";
 
 test.each([
   ['u', '--', '', 'u'],
@@ -33,4 +34,32 @@ test.each([
 
   expect(getUserName(user)).toEqual(expected);
 
+});
+
+test.each([
+  [undefined, undefined],
+  ['', undefined],
+  ['/', undefined],
+  ['привет', undefined],
+  ['/@', undefined],
+  ['/$%#', undefined],
+  ['/пиу', 'пиу'],
+  ['/пиу@', 'пиу'],
+  ['/пиу@bot', 'пиу'],
+])('getBotCommand', (text, excepted) => {
+  const message = getMessage(1, text);
+  expect(getBotCommand(message)).toEqual(excepted);
+
+});
+
+test.each([
+  ['', undefined],
+  [undefined, undefined],
+  ['привет, Вася', true],
+  ['привет, Вася\r\nHi, Alex', true],
+  ['234987 2№";%"№ЦУКЕЦ3459328-№;%"№;"', true],
+  ['абвqwe', true],
+  ['это русский текст? No, it is more English I guess', false]
+])('isCyrillic', (text, expected) => {
+  expect(isCyrillic(text as string)).toEqual(expected);
 });

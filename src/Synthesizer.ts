@@ -6,7 +6,7 @@ export const emotions = ['neutral'];
 
 export interface Synthesizer {
   getPause(n?: number): string,
-  synthesize(text: string, voice?: string, emotion?: string): Promise<Buffer | undefined>;
+  synthesize(text: string, language: 'ru-RU' | 'en-US', voice?: string, emotion?: string): Promise<Buffer | undefined>;
 }
 
 export class YandexTextToSpeech implements Synthesizer {
@@ -23,14 +23,13 @@ export class YandexTextToSpeech implements Synthesizer {
 
   private async setToken(): Promise<void> {
     const url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
-    console.log('Getting Yandex token...');
     return axios.post(url, { "yandexPassportOauthToken": this.accessKey })
       .then(r => this.token = r.data);
     //.catch(e => { console.log(e.response.data); return null; });
   }
 
 
-  async synthesize(text: string, voice = 'alyss', emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
+  async synthesize(text: string, language: 'ru-RU' | 'en-US', voice = 'alyss', emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
 
     if (!this.token.iamToken || this.token.expiresAt! < (new Date())) {
       await this.setToken();
@@ -46,7 +45,8 @@ export class YandexTextToSpeech implements Synthesizer {
       "emotion": emotion,
       "sampleRateHertz": "48000",
       "folderId": this.folderId,
-      "text": text
+      "text": text,
+      "lang": language
     });
 
     return axios.post(url, data, { headers: headers, responseType: 'arraybuffer' })

@@ -1,6 +1,6 @@
 import { ContextMessageUpdate } from "telegraf";
 import { Message } from "telegram-typings";
-import { isBotCommand } from "./TelegramHelper";
+import { getBotCommand } from "./TelegramHelper";
 
 export interface UserProfile {
   user_id: number;
@@ -34,7 +34,7 @@ export function getNewMessages(ctx: ContextMessageUpdate) {
   const user_messages = ctx.session.messages.filter(x => x.from!.id === user_id)
     .sort((x, y) => y.date - x.date);
   const user_last_message_date = (user_messages.length > 0) ? user_messages[0].date : 0;
-  return ctx.session.messages.filter(x => x.date > user_last_message_date && !isBotCommand(x))
+  return ctx.session.messages.filter(x => x.date > user_last_message_date && !getBotCommand(x))
     .sort((x, y) => x.date - y.date);
 }
 

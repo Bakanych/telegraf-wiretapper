@@ -7,13 +7,15 @@ import { EOL } from "os";
 import util from 'util';
 const exec = util.promisify(require('child_process').exec);
 import del from 'del';
+import { isCyrillic } from "./TelegramHelper";
 
 export class Player {
   constructor(private synthesizer: Synthesizer, private messageProcessor: MessageProcessor) { }
 
   async playPhrase(user_name: string, phrase: string, voice: string) {
+    const lang = isCyrillic(phrase) ? 'ru-RU' : 'en-US';
     const text = `${user_name}.${this.synthesizer.getPause()}${phrase}`;
-    return await this.synthesizer.synthesize(text, voice);
+    return await this.synthesizer.synthesize(text, lang, voice);
   }
 
   async playScript(script: Message[], voices: Map<number, string>) {
@@ -35,9 +37,10 @@ export class Player {
     const oggs: string[] = [];
 
     this.messageProcessor.convertToPlayScript(messages, (dialogue => {
-      const voice = user_voices.get(dialogue.user_id) || voices[0];
       const text = `${dialogue.user_name}.${this.synthesizer.getPause()}${dialogue.text}`;
-      promises.push(this.synthesizer.synthesize(text, voice));
+      const lang = isCyrillic(dialogue.text) ? 'ru-RU' : 'en-US';
+      const voice = user_voices.get(dialogue.user_id) || voices[0];
+      promises.push(this.synthesizer.synthesize(text, lang, voice));
     }));
 
     const result_buffer = (await Promise.all(promises))

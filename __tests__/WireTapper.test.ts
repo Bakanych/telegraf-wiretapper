@@ -49,10 +49,12 @@ beforeEach(() => {
 
 test.each([
   ['', 0],
-  ['/othercommand', 1],
-  ['/othercommand@anybot', 1]
+  ['/othercommand', 0],
+  ['/othercommand@anybot', 0],
+  ['test@anybot', 1],
+  ['(.)(.)', 1]
 ])
-  ('should save any message into Tape and do not run play', async (text, expected) => {
+  ('should save any message to storage (except non-play commands) and do not run play', async (text, expected) => {
 
     const context: any = {
       updateType: 'message',
@@ -74,6 +76,7 @@ test.each([
 ])
   ('should play first and then save message into Tape', async (text) => {
 
+    console.debug(text);
 
     const context: any = {
       session: {
@@ -87,6 +90,8 @@ test.each([
 
     await wireTapper.middleware()(context);
 
+    expect(sc.pushMessage).toHaveBeenCalled
+    expect(sc.getNewMessages).toHaveBeenCalled();
     expect(callOrder.indexOf(getNewMessages.name)).toBeLessThan(callOrder.indexOf(pushMessage.name));
 
   });
