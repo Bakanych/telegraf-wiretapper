@@ -1,4 +1,4 @@
-import { getNewMessages, pushMessage } from '../src/Storage';
+import { getNewMessages, pushMessage } from '../Storage';
 import { getUpdate, getMessage, getContext, getSession } from '../__TestHelpers/TestHelper';
 
 

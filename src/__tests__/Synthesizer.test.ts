@@ -1,6 +1,6 @@
 import axios from 'axios';
 import formurlencoded from 'form-urlencoded';
-import { YandexTextToSpeech } from "../src";
+import { YandexTextToSpeech } from "../Synthesizer";
 jest.mock('axios');
 
 test('YandexTextToSpeech', async () => {

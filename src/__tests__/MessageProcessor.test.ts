@@ -1,5 +1,4 @@
-import { MessageProcessor, Dialogue } from '../src/MessageProcessor';
-import { getUserName } from '../src/TelegramHelper';
+import { MessageProcessor, Dialogue } from '../MessageProcessor';
 import { EOL } from 'os';
 import { getMessage, getDialogue } from '../__TestHelpers/TestHelper';
 import { Message } from 'telegram-typings';

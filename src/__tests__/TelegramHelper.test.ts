@@ -1,5 +1,5 @@
 import { User } from "telegram-typings";
-import { getUserName, isCyrillic, getBotCommand } from "../src/TelegramHelper";
+import { getUserName, isCyrillic, getBotCommand } from "../TelegramHelper";
 import { getMessage } from "../__TestHelpers/TestHelper";
 
 test.each([
