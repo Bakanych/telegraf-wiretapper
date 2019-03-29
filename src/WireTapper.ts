@@ -2,7 +2,7 @@ import { Configuration } from "./Configuration";
 import { Player } from "./Player";
 import { Middleware, ContextMessageUpdate } from "telegraf";
 import { getNewMessages, pushMessage, getUserProfiles, updateMessage } from "./Storage";
-import { YandexTextToSpeech } from "./Synthesizer";
+import { YandexTextToSpeech, Voice } from "./Synthesizer";
 import { MessageProcessor } from "./MessageProcessor";
 import { getUserName, getBotCommand } from "./TelegramHelper";
 
@@ -49,7 +49,7 @@ export class WireTapper {
     }
 
     ctx.reply(`Есть у меня одна плёночка, ${user_name}...`);
-    const voices = new Map(getUserProfiles(ctx).map(x => [x.user_id, x.voice] as [number, string]));
+    const voices = new Map(getUserProfiles(ctx).map(x => [x.user_id, x.voice] as [number, Voice | undefined]));
     const voiceMessage = await this.player.playScript(messages, voices);
     if (voiceMessage)
       ctx.replyWithAudio({

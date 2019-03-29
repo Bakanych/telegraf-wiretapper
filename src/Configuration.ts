@@ -1,4 +1,4 @@
-export interface Configuration {
+export type Configuration = {
   playCommand: string,
   yandexCloud: {
     accessKey: string,

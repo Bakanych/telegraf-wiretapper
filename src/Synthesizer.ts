@@ -1,12 +1,21 @@
 import axios from 'axios';
 import formurlencoded from 'form-urlencoded';
 
-export const voices = ['oksana', 'alyss', 'jane', 'omazh', 'zahar', 'ermil'];
+export enum Voice {
+  Oksana = 'oksana',
+  Alyss = 'alyss',
+  Jane = 'jane',
+  Omazh = 'omazh',
+  Zahar = 'zahar',
+  Ermil = 'ermil',
+  DEFAULT = Oksana
+}
+
 export const emotions = ['neutral'];
 
 export interface Synthesizer {
   getPause(n?: number): string,
-  synthesize(text: string, language: 'ru-RU' | 'en-US', voice?: string, emotion?: string): Promise<Buffer | undefined>;
+  synthesize(text: string, language: 'ru-RU' | 'en-US', voice?: Voice, emotion?: string): Promise<Buffer | undefined>;
 }
 
 export class YandexTextToSpeech implements Synthesizer {
@@ -29,7 +38,7 @@ export class YandexTextToSpeech implements Synthesizer {
   }
 
 
-  async synthesize(text: string, language: 'ru-RU' | 'en-US', voice = 'alyss', emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
+  async synthesize(text: string, language: 'ru-RU' | 'en-US', voice: Voice = Voice.Oksana, emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
 
     if (!this.token.iamToken || this.token.expiresAt! < (new Date())) {
       await this.setToken();

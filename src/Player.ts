@@ -1,5 +1,5 @@
 import { Message } from "telegram-typings";
-import { Synthesizer, voices } from "./Synthesizer";
+import { Synthesizer, Voice } from "./Synthesizer";
 import { MessageProcessor } from "./MessageProcessor";
 import tmp from 'tmp';
 import fs from 'fs';
@@ -12,24 +12,23 @@ import { isCyrillic } from "./TelegramHelper";
 export class Player {
   constructor(private synthesizer: Synthesizer, private messageProcessor: MessageProcessor) { }
 
-  async playPhrase(user_name: string, phrase: string, voice: string) {
+  async playPhrase(user_name: string, phrase: string, voice: Voice) {
     const lang = isCyrillic(phrase) ? 'ru-RU' : 'en-US';
     const text = `${user_name}.${this.synthesizer.getPause()}${phrase}`;
     return await this.synthesizer.synthesize(text, lang, voice);
   }
 
-  async playScript(script: Message[], voices: Map<number, string>) {
-    return await this.synthesizeDialog(script, voices);
-  }
-
-  private assignVoice(messages: Message[]) {
+  public assignVoice(messages: Message[]) {
     const users = [...new Set(messages.map(x => x.from!.id))];
-    const result = new Map<number, string>();
-    users.map((user, i) => result.set(user, voices[i % voices.length]));
+    const voices_map = new Map<number, string>([...new Set(Object.values(Voice))]
+      .map((x, i) => [i, x] as [number, string]));
+
+    const result = new Map<number, Voice>();
+    users.map((user, i) => result.set(user, voices_map.get(i % voices_map.size) as Voice));
     return result;
   }
 
-  private async synthesizeDialog(messages: Message[], user_voices: Map<number, string>) {
+  public async playScript(messages: Message[], user_voices: Map<number, Voice | undefined>) {
     if (messages.length === 0)
       return undefined;
 
@@ -39,7 +38,7 @@ export class Player {
     this.messageProcessor.convertToPlayScript(messages, (dialogue => {
       const text = `${dialogue.user_name}.${this.synthesizer.getPause()}${dialogue.text}`;
       const lang = isCyrillic(dialogue.text) ? 'ru-RU' : 'en-US';
-      const voice = user_voices.get(dialogue.user_id) || voices[0];
+      const voice = user_voices.get(dialogue.user_id) || Voice.DEFAULT;
       promises.push(this.synthesizer.synthesize(text, lang, voice));
     }));
 

@@ -1,10 +1,11 @@
 import { ContextMessageUpdate } from "telegraf";
 import { Message } from "telegram-typings";
 import { getBotCommand } from "./TelegramHelper";
+import { Voice } from "./Synthesizer";
 
 export interface UserProfile {
   user_id: number;
-  voice?: string
+  voice?: Voice
 }
 
 export interface WireTapperModel {
