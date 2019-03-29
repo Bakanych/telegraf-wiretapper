@@ -1,6 +1,6 @@
-import { MessageProcessor, Dialogue } from '../MessageProcessor';
+import { MessageProcessor, Dialogue } from '../src/MessageProcessor';
 import { EOL } from 'os';
-import { getMessage, getDialogue } from '../__TestHelpers/TestHelper';
+import { getMessage, getDialogue } from '../__test_helpers/TestHelper';
 import { Message } from 'telegram-typings';
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));

@@ -1,5 +1,5 @@
-import { getNewMessages, pushMessage } from '../Storage';
-import { getUpdate, getMessage, getContext, getSession } from '../__TestHelpers/TestHelper';
+import { getNewMessages, pushMessage } from '../src/Storage';
+import { getUpdate, getMessage, getContext, getSession } from '../__test_helpers/TestHelper';
 
 
 test('getUserMessages from empty tape returns empty array', () => {

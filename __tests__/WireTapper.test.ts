@@ -1,8 +1,8 @@
-import { WireTapper, Configuration, pushMessage, getNewMessages, getOrAddUserProfile, getUserProfiles } from '../index';
-import { getUpdate, getMessage } from '../__TestHelpers/TestHelper';
+import { WireTapper, Configuration, pushMessage, getNewMessages, getOrAddUserProfile, getUserProfiles } from '../src/index';
+import { getUpdate, getMessage } from '../__test_helpers/TestHelper';
 import { User } from 'telegram-typings';
-import * as sc from '../Storage';
-jest.mock('../Player');
+import * as sc from '../src/Storage';
+jest.mock('../src/Player');
 
 // const mock_recordMessage = jest.fn(() => callOrder.push(recordMessage.name));
 // const mock_getNewMessages = jest.fn(() => callOrder.push('getNewMessages'));

@@ -1,6 +1,6 @@
 import { User } from "telegram-typings";
-import { getUserName, isCyrillic, getBotCommand } from "../TelegramHelper";
-import { getMessage } from "../__TestHelpers/TestHelper";
+import { getUserName, isCyrillic, getBotCommand } from "../src/TelegramHelper";
+import { getMessage } from "../__test_helpers/TestHelper";
 
 test.each([
   ['u', '--', '', 'u'],
