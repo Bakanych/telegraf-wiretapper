@@ -10,7 +10,7 @@ const player = new Player(mock_Synthesizer, mock_MessageProcessor);
 test(`${player.assignVoice.name} should assign voices cyclically`, () => {
 
   const voices = Object.values(Voice);
-  const number_of_unique_users = voices.length; // as number of unique voices plus DEFAULT
+  const number_of_unique_users = voices.length + 1;
   const messages = [...Array(number_of_unique_users).keys()].map(x => getMessage(x));
   const result = player.assignVoice(messages);
 

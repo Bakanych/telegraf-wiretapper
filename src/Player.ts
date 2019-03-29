@@ -20,7 +20,7 @@ export class Player {
 
   public assignVoice(messages: Message[]) {
     const users = [...new Set(messages.map(x => x.from!.id))];
-    const voices_map = new Map<number, string>([...new Set(Object.values(Voice))]
+    const voices_map = new Map<number, string>(Object.values(Voice)
       .map((x, i) => [i, x] as [number, string]));
 
     const result = new Map<number, Voice>();
@@ -38,7 +38,7 @@ export class Player {
     this.messageProcessor.convertToPlayScript(messages, (dialogue => {
       const text = `${dialogue.user_name}.${this.synthesizer.getPause()}${dialogue.text}`;
       const lang = isCyrillic(dialogue.text) ? 'ru-RU' : 'en-US';
-      const voice = user_voices.get(dialogue.user_id) || Voice.DEFAULT;
+      const voice = user_voices.get(dialogue.user_id) || Voice.Oksana;
       promises.push(this.synthesizer.synthesize(text, lang, voice));
     }));
 

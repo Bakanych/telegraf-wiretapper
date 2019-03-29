@@ -5,7 +5,7 @@ jest.mock('axios');
 
 test('YandexTextToSpeech', async () => {
 
-  const iamToken = 'my token', folderId = '123', text = 'бла бла', language = 'ru-RU', voice = Voice.DEFAULT, emotion = 'неимоверно веселый', format = 'неформат'
+  const iamToken = 'my token', folderId = '123', text = 'бла бла', language = 'ru-RU', voice = Voice.Oksana, emotion = 'неимоверно веселый', format = 'неформат'
   const tts = new YandexTextToSpeech('', folderId);
   const data = formurlencoded({
     "format": format,

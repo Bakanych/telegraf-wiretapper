@@ -7,8 +7,7 @@ export enum Voice {
   Jane = 'jane',
   Omazh = 'omazh',
   Zahar = 'zahar',
-  Ermil = 'ermil',
-  DEFAULT = Oksana
+  Ermil = 'ermil'
 }
 
 export const emotions = ['neutral'];
