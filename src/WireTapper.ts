@@ -20,13 +20,14 @@ export class WireTapper {
   middleware(): Middleware<ContextMessageUpdate> {
     return async (ctx, next) => {
       if (next) await next();
+      let play_result = false;
       if (ctx.updateType === 'message' && ctx.update.message!.text) {
 
         const bot_command = getBotCommand(ctx.update.message!);
         if (bot_command === this.config.playCommand)
-          await this.play(ctx);
+          play_result = await this.play(ctx);
 
-        if (!bot_command || (bot_command && bot_command === this.config.playCommand))
+        if (play_result || !bot_command)
           pushMessage(ctx);
 
         return;
@@ -39,27 +40,33 @@ export class WireTapper {
 
   }
 
-  private async play(ctx: ContextMessageUpdate) {
+  private async play(ctx: ContextMessageUpdate): Promise<boolean> {
     const user_name = getUserName(ctx.update.message!.from!);
     const messages = getNewMessages(ctx);
     //console.log(messages.map(x => `${x.from!.first_name}: ${x.text}`));
     if (!messages || messages.length === 0) {
       ctx.reply(`Терпение, ${user_name}...`);
-      return;
+      return true;
     }
 
     ctx.reply(`Есть у меня одна плёночка, ${user_name}...`);
     const voices = new Map(getUserProfiles(ctx).map(x => [x.user_id, x.voice] as [number, Voice | undefined]));
     const voiceMessage = await this.player.playScript(messages, voices);
-    if (voiceMessage)
-      ctx.replyWithAudio({
-        source: voiceMessage
-      }, {
+    if (voiceMessage) {
+      ctx.replyWithAudio(
+        {
+          source: voiceMessage
+        },
+        {
           caption: `Строго для ${user_name}!`,
           title: 'плёночка'
         });
-    else
+      return true;
+    }
+    else {
       ctx.reply('Явка провалена.');
+      return false;
+    }
 
   }
 }
