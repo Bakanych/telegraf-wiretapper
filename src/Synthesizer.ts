@@ -25,21 +25,26 @@ export class YandexTextToSpeech implements Synthesizer {
     this.setToken();
   }
 
-  private token = { iamToken: null, expiresAt: null };
+  private token = { expiresAt: 0, iamToken: '' };
 
   getPause = (n: number = 2) => [...Array(n).keys()].map(x => '-').join(',') + ' ';
 
   private async setToken(): Promise<void> {
     const url = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
     return axios.post(url, { "yandexPassportOauthToken": this.accessKey })
-      .then(r => this.token = r.data);
+      .then(r => {
+        this.token = {
+          expiresAt: new Date(r.data.expiresAt).getTime(),
+          iamToken: r.data.iamToken
+        };
+      });
     //.catch(e => { console.log(e.response.data); return null; });
   }
 
 
   async synthesize(text: string, language: 'ru-RU' | 'en-US', voice: Voice = Voice.Oksana, emotion = 'neutral', format = 'oggopus'): Promise<Buffer | undefined> {
 
-    if (!this.token.iamToken || this.token.expiresAt! < (new Date())) {
+    if (!this.token.iamToken || this.token.expiresAt < Date.now()) {
       await this.setToken();
     }
 

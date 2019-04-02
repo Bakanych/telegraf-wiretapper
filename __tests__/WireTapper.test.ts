@@ -32,7 +32,8 @@ const mockTelegram: any = {
   getMe: () => new Promise<User>(resolve => resolve({ id: 1, is_bot: true, username: 'mybot', first_name: 'mybot' }))
 }
 const reply = (text: string) => console.log(text);
-let wireTapper: any;
+const replyWithAudio = (audio: {}) => console.log('audio');
+let wireTapper: WireTapper;
 
 const callOrder: string[] = [];
 beforeEach(() => {
@@ -74,10 +75,9 @@ test.each([
   [`/${config.playCommand}`],
   [`/${config.playCommand}@mybot`]
 ])
-  ('should play first and then save message into Tape', async (text) => {
+  ('should play first and then save message into Tape if buffer was returned', async (text) => {
 
-    console.debug(text);
-
+    spyOn(wireTapper.player, 'playScript').and.returnValue(Promise.resolve(Buffer.alloc(0)));
     const context: any = {
       session: {
         user_profiles: [],
@@ -85,13 +85,32 @@ test.each([
       updateType: 'message',
       update: getUpdate(getMessage(1, text)),
       telegram: mockTelegram,
-      reply: reply
+      reply: reply,
+      replyWithAudio: replyWithAudio
     };
 
     await wireTapper.middleware()(context);
 
-    expect(sc.pushMessage).toHaveBeenCalled
+    expect(sc.pushMessage).toHaveBeenCalled();
     expect(sc.getNewMessages).toHaveBeenCalled();
     expect(callOrder.indexOf(getNewMessages.name)).toBeLessThan(callOrder.indexOf(pushMessage.name));
 
   });
+
+test('should play first and do not save message into Tape if undefined was returned', async () => {
+
+  const context: any = {
+    session: {
+      user_profiles: [],
+    },
+    updateType: 'message',
+    update: getUpdate(getMessage(1, '/' + config.playCommand)),
+    telegram: mockTelegram,
+    reply: reply
+  };
+
+  await wireTapper.middleware()(context);
+
+  expect(sc.getNewMessages).toHaveBeenCalled();
+  expect(sc.pushMessage).not.toHaveBeenCalled();
+});
