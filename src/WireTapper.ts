@@ -8,7 +8,7 @@ import { getUserName, getBotCommand } from "./TelegramHelper";
 
 export class WireTapper {
 
-  player: Player;
+  readonly player: Player;
 
   constructor(private config: Configuration) {
     this.player = new Player(

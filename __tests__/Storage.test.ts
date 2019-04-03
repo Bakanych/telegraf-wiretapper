@@ -1,4 +1,4 @@
-import { getNewMessages, pushMessage } from '../src/Storage';
+import { getNewMessages, pushMessage, WireTapperModel, max_messages } from '../src/Storage';
 import { getUpdate, getMessage, getContext, getSession } from '../__test_helpers/TestHelper';
 
 
@@ -39,3 +39,18 @@ test('getUserMessages should return only other user messages received after user
   expect(new_messages).toContain(expected_1);
   expect(new_messages).toContain(expected_2);
 });
+
+test.each([
+  [0, 1],
+  [max_messages, max_messages]
+])
+  ('storage capacity should be less or equal to max_messages', (before, after) => {
+
+    const context = getContext(getUpdate(), getSession());
+    (context.session as WireTapperModel).messages =
+      [...Array(before).keys()].map(i => getMessage(i));
+    pushMessage(context);
+
+    expect(context.session.messages.length).toEqual(after);
+
+  });

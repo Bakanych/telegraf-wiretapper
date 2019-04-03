@@ -1,6 +1,6 @@
 {
   "name": "telegraf-wiretapper",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Convert your unread telegram chat messages into voice dialog",
   "repository": {
     "url": "bakanych/telegraf-wiretapper",

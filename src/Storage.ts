@@ -13,9 +13,13 @@ export interface WireTapperModel {
   user_profiles: UserProfile[];
 }
 
+export const max_messages = 5000;
+
 export function pushMessage(ctx: ContextMessageUpdate) {
   ctx.session.messages = ctx.session.messages || [];
   ctx.session.messages.push(ctx.update.message!);
+
+  ctx.session.messages.splice(max_messages - 1, ctx.session.messages.length - max_messages);
 }
 
 export function updateMessage(ctx: ContextMessageUpdate) {
