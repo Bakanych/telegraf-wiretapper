@@ -32,7 +32,7 @@ export function updateMessage(ctx: ContextMessageUpdate) {
 
 export function getNewMessages(ctx: ContextMessageUpdate) {
   ctx.session.messages = ctx.session.messages || [];
-  if (!ctx.session.messages)
+  if (!ctx.session.messages.length)
     return [];
 
   const user_id = ctx.update.message!.from!.id;
