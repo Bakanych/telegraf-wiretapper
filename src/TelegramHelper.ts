@@ -16,7 +16,7 @@ export function getBotCommand(message: Message): string | undefined {
   return (match && match.length >= 1) ? match[1] as string : undefined;
 }
 
-export function isCyrillic(text: string) {
+export function isCyrillic(text: string | undefined) {
   if (!text)
     return undefined;
 

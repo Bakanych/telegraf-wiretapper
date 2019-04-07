@@ -12,7 +12,7 @@ test.each([
   ['u', '! -- )))', '', 'u'],
 ])('get full user name', (username, first_name, last_name, expected) => {
   const user: User = {
-    id: 1, is_bot: false, first_name: first_name, username: username, last_name: last_name
+    id: 1, is_bot: false, first_name: first_name as string, username: username, last_name: last_name
   }
 
   expect(getUserName(user, false)).toEqual(expected);
@@ -29,7 +29,7 @@ test.each([
   ['u', '! -- )))', 'last name', 'u'],
 ])('get first user name', (username, first_name, last_name, expected) => {
   const user: User = {
-    id: 1, is_bot: false, first_name: first_name, username: username, last_name: last_name
+    id: 1, is_bot: false, first_name: first_name as string, username: username, last_name: last_name
   }
 
   expect(getUserName(user)).toEqual(expected);
@@ -52,14 +52,14 @@ test.each([
 
 });
 
-test.each([
-  ['', undefined],
+test.each<[string | undefined, boolean | undefined]>([
   [undefined, undefined],
+  ['', undefined],
   ['привет, Вася', true],
   ['привет, Вася\r\nHi, Alex', true],
   ['234987 2№";%"№ЦУКЕЦ3459328-№;%"№;"', true],
   ['абвqwe', true],
   ['это русский текст? No, it is more English I guess', false]
 ])('isCyrillic', (text, expected) => {
-  expect(isCyrillic(text as string)).toEqual(expected);
+  expect(isCyrillic(text)).toEqual(expected);
 });
