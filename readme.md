@@ -64,5 +64,3 @@ then run it using command:
 ```bash
 docker run <your bot image> -d --env BOT_TOKEN=<your bot token> --env YANDEX_CLOUD_FOLDER_ID=<id of Yandex cloud folder> --env YANDEX_CLOUD_ACCESS_KEY=<Yandex cloud access key>
 ```
-
-
