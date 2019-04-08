@@ -23,9 +23,6 @@
     "text to speech"
   ],
   "dependencies": {
-    "@types/form-urlencoded": "^2.0.0",
-    "@types/glob": "^7.1.1",
-    "@types/tmp": "0.0.34",
     "axios": "^0.18.0",
     "del": "^4.0.0",
     "form-urlencoded": "^3.0.0",
@@ -33,6 +30,9 @@
     "tmp": "0.0.33"
   },
   "devDependencies": {
+    "@types/form-urlencoded": "^2.0.0",
+    "@types/glob": "^7.1.1",
+    "@types/tmp": "0.0.34",
     "@types/jest": "latest",
     "jest": "latest",
     "telegraf": "^3.27.1",
