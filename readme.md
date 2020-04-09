@@ -1,11 +1,6 @@
 # [Telegraf](https://github.com/telegraf/telegraf) Wire Tapper
 
-[![npm][version]][npm]
-[![npm][downloads]][npm]
-
-[npm]: (https://www.npmjs.com/package/telegraf-wiretapper)
-[version]: (https://img.shields.io/npm/v/telegraf-wiretapper.svg)
-[downloads]: (https://img.shields.io/npm/dm/telegraf-wiretapper.svg)
+[![npm version](https://badge.fury.io/js/telegraf-wiretapper.svg)](https://badge.fury.io/js/telegraf-wiretapper)
 
 Telegraf middleware for those who tired to read [over9000](https://i.kym-cdn.com/entries/icons/original/000/000/056/itsover1000.jpg) unread chat messages and prefer to listen it as a podcast.
 
