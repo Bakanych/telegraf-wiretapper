@@ -23,7 +23,7 @@
     "text to speech"
   ],
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "del": "^5.1.0",
     "form-urlencoded": "^4.1.3",
     "os": "^0.1.1",
